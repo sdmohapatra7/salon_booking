@@ -21,7 +21,12 @@ const User = sequelize.define('User', {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true // Allow null for Google Auth users
+    },
+    googleId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
     },
     avatar: {
         type: DataTypes.STRING,
@@ -30,6 +35,14 @@ const User = sequelize.define('User', {
     role: {
         type: DataTypes.ENUM('customer', 'admin'),
         defaultValue: 'customer'
+    },
+    twoFactorSecret: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    isTwoFactorEnabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 });
 
