@@ -11,6 +11,10 @@ const Service = sequelize.define('Service', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false

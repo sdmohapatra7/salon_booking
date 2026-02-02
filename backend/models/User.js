@@ -26,6 +26,10 @@ const User = sequelize.define('User', {
     avatar: {
         type: DataTypes.STRING,
         defaultValue: 'https://ui-avatars.com/api/?name=User&background=random'
+    },
+    role: {
+        type: DataTypes.ENUM('customer', 'admin'),
+        defaultValue: 'customer'
     }
 });
 

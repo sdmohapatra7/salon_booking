@@ -1,29 +1,32 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/favoritesSlice';
+import ReviewSection from './ReviewSection';
 
 const ServiceCard = ({ service }) => {
     const dispatch = useDispatch();
     const { items: favorites } = useSelector((state) => state.favorites);
+    const [showReviews, setShowReviews] = useState(false);
 
     const isFavorite = useMemo(() => {
         return favorites.some(item => item.id === service.id);
     }, [favorites, service.id]);
 
     const handleFavorite = (e) => {
-        e.preventDefault(); // Prevent navigating if wrapped in Link
+        e.preventDefault();
         if (isFavorite) {
             dispatch(removeFromFavorites(service.id));
         } else {
             dispatch(addToFavorites(service));
         }
     };
+
     return (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col group">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col group h-auto">
             <div className="h-48 overflow-hidden relative">
                 <img
-                    src={service.image}
+                    src={service.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60"}
                     alt={service.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -45,36 +48,36 @@ const ServiceCard = ({ service }) => {
                     <div>
                         <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{service.name}</h3>
                         <p className="text-sm text-gray-500 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-gray-400">
-                                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                            </svg>
-                            New Jersey, USA
+                            {service.duration} mins • NYC
                         </p>
-                    </div>
-                    <div className="flex items-center bg-green-50 px-1.5 py-0.5 rounded text-xs font-bold text-green-700 gap-0.5">
-                        <span>4.8</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                        </svg>
                     </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50/50">
-                    <div className="flex flex-col">
-                        <span className="text-xs text-gray-400 line-through">${Math.round(service.price * 1.2)}</span>
-                        <span className="text-lg font-bold text-gray-900">${service.price}</span>
+                <div className="mt-auto pt-4 border-t border-gray-50/50">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-400 line-through">${Math.round(service.price * 1.2)}</span>
+                            <span className="text-lg font-bold text-gray-900">${service.price}</span>
+                        </div>
+                        <Link
+                            to={`/book/${service.id}`}
+                            className="bg-black text-white hover:bg-gray-800 font-medium py-2 px-6 rounded-lg text-sm transition-colors"
+                        >
+                            Book
+                        </Link>
                     </div>
 
-                    <Link
-                        to={`/book/${service.id}`}
-                        className="bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-medium py-2 px-4 rounded-lg text-sm transition-colors duration-300"
+                    <button
+                        onClick={() => setShowReviews(!showReviews)}
+                        className="w-full text-center text-teal-600 text-sm hover:underline border-t border-gray-100 pt-2"
                     >
-                        Book Now
-                    </Link>
+                        {showReviews ? 'Hide Reviews ▲' : 'Read Reviews ▼'}
+                    </button>
+
+                    {showReviews && <ReviewSection serviceId={service.id} />}
                 </div>
             </div>
         </div>
     );
 };
-
 export default ServiceCard;

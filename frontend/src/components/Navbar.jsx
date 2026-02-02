@@ -39,6 +39,9 @@ const Navbar = () => {
                     </>
                 )}
                 <Link to="/contact" className="hover:text-black transition-colors">Contact</Link>
+                {isAuthenticated && user?.role === 'admin' && (
+                    <Link to="/admin" className="text-teal-600 font-bold hover:text-teal-800 transition-colors">Admin Dashboard</Link>
+                )}
             </div>
 
             {/* Auth Buttons */}

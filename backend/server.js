@@ -26,6 +26,7 @@ app.use((req, res, next) => {
 app.use('/api/services', servicesRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/reviews', require('./routes/reviews'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -39,7 +40,7 @@ sequelize.authenticate()
         console.log('Database connected...');
         // Sync models (force: false means don't drop tables if they exist)
         // In dev, you might use { force: true } to reset DB, strictly for this demo I'll use default.
-        return sequelize.sync();
+        return sequelize.sync({ alter: true });
     })
     .then(() => {
         app.listen(PORT, () => {

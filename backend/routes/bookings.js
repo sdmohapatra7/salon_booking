@@ -1,8 +1,59 @@
 const express = require('express');
 const router = express.Router();
 const { Booking, Service } = require('../models');
+const { verifyAdmin } = require('../middleware/auth');
+const { sendBookingConfirmation, sendBookingCancellation } = require('../utils/emailService');
 
-// GET /api/bookings - Fetch all bookings (for demo purpose, fetches all. In real app, filter by User)
+// GET /api/bookings/all - Fetch ALL bookings (Admin only)
+router.get('/all', verifyAdmin, async (req, res) => {
+    try {
+        const bookings = await Booking.findAll({
+            include: [{ model: Service, attributes: ['name', 'price'] }],
+            order: [['date', 'DESC'], ['time', 'ASC']]
+        });
+
+        // Format for frontend
+        const formattedBookings = bookings.map(b => ({
+            id: b.id,
+            serviceId: b.serviceId,
+            serviceName: b.Service ? b.Service.name : 'Unknown Service',
+            servicePrice: b.Service ? b.Service.price : 0,
+            date: b.date,
+            time: b.time,
+            status: b.status,
+            customerName: b.customerName,
+            notes: b.notes,
+            userId: b.userId
+        }));
+
+        res.json(formattedBookings);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// PUT /api/bookings/:id/status - Update Booking Status (Admin only)
+router.put('/:id/status', verifyAdmin, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const booking = await Booking.findByPk(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        booking.status = status;
+        await booking.save();
+
+        res.json(booking);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// GET /api/bookings - Fetch user bookings (Public/User)
 router.get('/', async (req, res) => {
     try {
         const bookings = await Booking.findAll({
@@ -75,6 +126,15 @@ router.post('/', async (req, res) => {
         // Fetch service name for response
         const service = await Service.findByPk(serviceId);
 
+        // --- EMAIL SIMULATION ---
+        const serviceName = service ? service.name : 'Service';
+        if (userId) {
+            // If logged in, fetch email (omitted query for speed, usually user email is in JWT or passed in body)
+            // Using customerName or passed body email would be standard.
+        }
+        sendBookingConfirmation({ email: null }, { ...booking.toJSON(), serviceName });
+        // ------------------------
+
         console.log('Booking saved successfully:', booking.id);
 
         res.json({
@@ -95,13 +155,23 @@ router.post('/', async (req, res) => {
 // POST /api/bookings/:id/cancel
 router.post('/:id/cancel', async (req, res) => {
     try {
-        const booking = await Booking.findByPk(req.params.id);
+        const booking = await Booking.findByPk(req.params.id, {
+            include: [{ model: Service, attributes: ['name'] }]
+        });
+
         if (!booking) {
             return res.status(404).json({ success: false, message: "Booking not found" });
         }
 
         booking.status = 'Cancelled';
         await booking.save();
+
+        // --- EMAIL SIMULATION ---
+        sendBookingCancellation({
+            ...booking.toJSON(),
+            serviceName: booking.Service ? booking.Service.name : 'Service'
+        });
+        // ------------------------
 
         res.json({ success: true, message: "Booking cancelled", booking });
     } catch (err) {

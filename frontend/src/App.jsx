@@ -13,8 +13,16 @@ import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import Settings from './pages/Settings';
 import Contact from './pages/Contact';
+import UserDashboard from './pages/UserDashboard';
 
+import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ManageServices from './pages/admin/ManageServices';
+import ManageBookings from './pages/admin/ManageBookings';
+
+
+
 
 const Layout = () => {
   const location = useLocation();
@@ -34,6 +42,14 @@ const Layout = () => {
           <Route path="/register" element={<Register />} />
 
           {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/bookings"
             element={
@@ -58,6 +74,14 @@ const Layout = () => {
               </ProtectedRoute>
             }
           />
+        </Routes>
+        {/* Admin Routes */}
+        <Routes>
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/services" element={<ManageServices />} />
+            <Route path="/admin/bookings" element={<ManageBookings />} />
+          </Route>
         </Routes>
       </main>
       {!hideLayout && <Footer />}
