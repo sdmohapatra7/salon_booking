@@ -1,11 +1,17 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
 import UserSidebar from '../components/UserSidebar';
+import { fetchFavorites } from '../store/favoritesSlice'; // Import action
 
 const Favorites = () => {
+    const dispatch = useDispatch();
     const { items: favorites } = useSelector((state) => state.favorites);
+
+    React.useEffect(() => {
+        dispatch(fetchFavorites());
+    }, [dispatch]);
 
     return (
         <div className="bg-gray-50 min-h-screen pb-12">

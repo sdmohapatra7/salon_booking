@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Booking, Service } = require('../models');
-const { verifyAdmin } = require('../middleware/auth');
+const { verifyAdmin, authenticateToken } = require('../middleware/auth');
 const { sendBookingConfirmation, sendBookingCancellation } = require('../utils/emailService');
 
 // GET /api/bookings/all - Fetch ALL bookings (Admin only)
@@ -53,10 +53,11 @@ router.put('/:id/status', verifyAdmin, async (req, res) => {
     }
 });
 
-// GET /api/bookings - Fetch user bookings (Public/User)
-router.get('/', async (req, res) => {
+// GET /api/bookings - Fetch user bookings (Authenticated)
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const bookings = await Booking.findAll({
+            where: { userId: req.user.id },
             include: [{ model: Service, attributes: ['name', 'price'] }],
             order: [['date', 'ASC']]
         });

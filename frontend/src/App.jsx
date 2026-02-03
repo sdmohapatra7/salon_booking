@@ -1,6 +1,8 @@
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './store/store';
+import { fetchFavorites } from './store/favoritesSlice';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import ServiceListing from './pages/ServiceListing';
@@ -14,6 +16,7 @@ import Favorites from './pages/Favorites';
 import Settings from './pages/Settings';
 import Contact from './pages/Contact';
 import UserDashboard from './pages/UserDashboard';
+import GenericPage from './pages/GenericPage';
 
 import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,7 +29,15 @@ import ManageBookings from './pages/admin/ManageBookings';
 
 const Layout = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const hideLayout = ['/login', '/register'].includes(location.pathname);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchFavorites());
+    }
+  }, [user, dispatch]);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
@@ -40,6 +51,13 @@ const Layout = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Static Pages */}
+          <Route path="/about" element={<GenericPage type="about" />} />
+          <Route path="/careers" element={<GenericPage type="careers" />} />
+          <Route path="/faq" element={<GenericPage type="faq" />} />
+          <Route path="/privacy" element={<GenericPage type="privacy" />} />
+          <Route path="/terms" element={<GenericPage type="terms" />} />
 
           {/* Protected Routes */}
           <Route

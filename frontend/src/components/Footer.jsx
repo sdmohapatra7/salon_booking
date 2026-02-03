@@ -3,95 +3,76 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
-        <footer className="bg-white border-t border-gray-100 pt-16 pb-8 text-sm text-gray-500 font-light">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-5 gap-8">
-                {/* Columns */}
+        <footer className="bg-rose-50 border-t border-rose-100 pt-16 pb-8 text-sm text-gray-600 font-light">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+
+                {/* Brand Column */}
+                <div className="space-y-4">
+                    <h2 className="text-2xl text-gray-900 font-light tracking-wider">SALON<span className="font-bold text-rose-600">WALA</span></h2>
+                    <p className="text-gray-600 leading-relaxed max-w-xs">
+                        Experience world-class hair and beauty services. We bring the luxury salon experience directly to you.
+                    </p>
+                    <div className="flex gap-4 pt-2">
+                        {/* Social Icons */}
+                        <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white border border-rose-100 flex items-center justify-center hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-rose-600 shadow-sm">
+                            <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white border border-rose-100 flex items-center justify-center hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-rose-600 shadow-sm">
+                            <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path></svg>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white border border-rose-100 flex items-center justify-center hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-rose-600 shadow-sm">
+                            <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                {/* Quick Links */}
                 <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Product</h3>
+                    <h3 className="font-semibold text-gray-900 tracking-wide uppercase text-xs mb-6">Company</h3>
                     <ul className="space-y-3">
-                        <li><Link to="#" className="hover:text-rose-500">Features</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Pricing</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Case studies</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Reviews</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Updates</Link></li>
+                        <li><Link to="/about" className="hover:text-rose-600 transition-colors">About Us</Link></li>
+                        <li><Link to="/careers" className="hover:text-rose-600 transition-colors">Careers</Link></li>
+                        <li><Link to="/contact" className="hover:text-rose-600 transition-colors">Contact</Link></li>
+                        <li><Link to="/privacy" className="hover:text-rose-600 transition-colors">Privacy Policy</Link></li>
+                        <li><Link to="/terms" className="hover:text-rose-600 transition-colors">Terms of Service</Link></li>
                     </ul>
                 </div>
 
+                {/* Services Links */}
                 <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
+                    <h3 className="font-semibold text-gray-900 tracking-wide uppercase text-xs mb-6">Discover</h3>
                     <ul className="space-y-3">
-                        <li><Link to="#" className="hover:text-rose-500">Getting started</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Help center</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Server status</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Report a bug</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Chat support</Link></li>
+                        <li><Link to="/services" className="hover:text-rose-600 transition-colors">All Services</Link></li>
+                        <li><Link to="/book" className="hover:text-rose-600 transition-colors">Book an Appointment</Link></li>
+                        <li><Link to="/favorites" className="hover:text-rose-600 transition-colors">My Favorites</Link></li>
+                        <li><Link to="/faq" className="hover:text-rose-600 transition-colors">FAQ</Link></li>
                     </ul>
                 </div>
 
+                {/* Newsletter */}
                 <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">For Provider</h3>
-                    <ul className="space-y-3">
-                        <li><Link to="#" className="hover:text-rose-500">About</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Contact us</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Careers</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Faq s</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Blog</Link></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
-                    <ul className="space-y-3">
-                        <li><Link to="#" className="hover:text-rose-500">Getting started</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Help center</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Other Products</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Report a bug</Link></li>
-                        <li><Link to="#" className="hover:text-rose-500">Chat support</Link></li>
-                    </ul>
-                </div>
-
-                {/* Subscription */}
-                <div className="col-span-2 md:col-span-1">
-                    <h3 className="font-semibold text-gray-900 mb-4">SignUp For Subscription</h3>
-                    <div className="space-y-3">
+                    <h3 className="font-semibold text-gray-900 tracking-wide uppercase text-xs mb-6">Stay Updated</h3>
+                    <p className="mb-4 text-xs text-gray-600">Subscribe to our newsletter for the latest beauty trends and exclusive offers.</p>
+                    <div className="flex flex-col gap-3">
                         <input
                             type="email"
-                            placeholder="Enter your email"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-500"
+                            placeholder="Your email address"
+                            className="w-full px-4 py-2.5 bg-white border border-rose-200 text-gray-900 rounded focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all text-sm placeholder-gray-400"
                         />
-                        <button className="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-md font-medium transition-colors">
+                        <button className="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded font-medium transition-colors text-sm uppercase tracking-wide shadow-md hover:shadow-lg">
                             Subscribe
                         </button>
-                    </div>
-
-                    <div className="flex gap-2 mt-6">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-8 cursor-pointer" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-8 cursor-pointer" />
                     </div>
                 </div>
             </div>
 
             {/* Bottom Bar */}
-            <div className="max-w-7xl mx-auto px-6 md:px-12 mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center">
-                <div className="flex items-center gap-4 mb-4 md:mb-0">
-                    <div className="flex gap-3">
-                        {/* Social Icons Placeholder */}
-                        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">f</div>
-                        <div className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center text-xs">I</div>
-                        <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs">t</div>
-                        <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">w</div>
-                        <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">y</div>
-                        <div className="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center text-xs">in</div>
-                    </div>
-                </div>
-
-                <div className="text-gray-400 text-xs text-center md:text-right">
-                    <p className="mb-2">Copyright © 2025 - All Rights Reserved SalonWala</p>
-                    <div className="flex gap-4 justify-center md:justify-end">
-                        <Link to="#" className="hover:text-gray-600">Terms and Conditions</Link>
-                        <span>|</span>
-                        <Link to="#" className="hover:text-gray-600">Privacy Policy</Link>
-                    </div>
+            <div className="max-w-7xl mx-auto px-6 md:px-12 mt-16 pt-8 border-t border-rose-200 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2025 SalonWala. All rights reserved.</p>
+                <div className="flex gap-6 mt-4 md:mt-0">
+                    <Link to="/privacy" className="hover:text-rose-600 transition-colors">Privacy</Link>
+                    <Link to="/terms" className="hover:text-rose-600 transition-colors">Terms</Link>
+                    <Link to="/contact" className="hover:text-rose-600 transition-colors">Sitemap</Link>
                 </div>
             </div>
         </footer>

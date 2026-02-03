@@ -29,6 +29,7 @@ app.use('/api/services', servicesRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/2fa', require('./routes/twoFactor'));
 
 // Global Error Handler

@@ -1,40 +1,51 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../api/axiosConfig';
 
-// Helper to load from storage
-const loadFavorites = () => {
-    try {
-        const serialized = localStorage.getItem('salon_favorites');
-        if (serialized === null) {
-            return [];
-        }
-        return JSON.parse(serialized);
-    } catch (err) {
-        return [];
-    }
-};
+export const fetchFavorites = createAsyncThunk('favorites/fetchFavorites', async () => {
+    const response = await api.get('/favorites');
+    return response.data;
+});
 
-const initialState = {
-    items: loadFavorites(),
-};
+export const addToFavorites = createAsyncThunk('favorites/add', async (service) => {
+    // We pass the whole service object for optimistic UI or just ID to backend
+    const response = await api.post('/favorites', { serviceId: service.id });
+    // Backend returns the service details
+    return response.data;
+});
+
+export const removeFromFavorites = createAsyncThunk('favorites/remove', async (serviceId) => {
+    const response = await api.delete(`/favorites/${serviceId}`);
+    return response.data.serviceId;
+});
 
 const favoritesSlice = createSlice({
     name: 'favorites',
-    initialState,
-    reducers: {
-        addToFavorites: (state, action) => {
-            // Check if already exists
-            const exists = state.items.find(item => item.id === action.payload.id);
-            if (!exists) {
-                state.items.push(action.payload);
-                localStorage.setItem('salon_favorites', JSON.stringify(state.items));
-            }
-        },
-        removeFromFavorites: (state, action) => {
-            state.items = state.items.filter(item => item.id !== action.payload);
-            localStorage.setItem('salon_favorites', JSON.stringify(state.items));
-        }
+    initialState: {
+        items: [],
+        status: 'idle',
+        error: null
     },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            // Fetch
+            .addCase(fetchFavorites.fulfilled, (state, action) => {
+                state.items = action.payload;
+                state.status = 'succeeded';
+            })
+            // Add
+            .addCase(addToFavorites.fulfilled, (state, action) => {
+                // Avoid duplicates in store if backend doesn't return error but we retry
+                const exists = state.items.find(i => i.id === action.payload.id);
+                if (!exists) {
+                    state.items.push(action.payload);
+                }
+            })
+            // Remove
+            .addCase(removeFromFavorites.fulfilled, (state, action) => {
+                state.items = state.items.filter(item => item.id !== action.payload);
+            })
+    }
 });
 
-export const { addToFavorites, removeFromFavorites } = favoritesSlice.actions;
 export default favoritesSlice.reducer;
