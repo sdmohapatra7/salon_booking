@@ -99,12 +99,12 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // GET /api/auth/google/callback
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login?error=GoogleAuthFailed', session: false }),
+    passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=GoogleAuthFailed`, session: false }),
     (req, res) => {
         // Successful authentication
         const token = signToken(req.user);
         // Redirect to frontend
-        res.redirect(`http://localhost:5173/login?token=${token}`);
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}`);
     }
 );
 
