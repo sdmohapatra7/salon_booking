@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Booking, Service } = require('../models');
+const { Booking, Service, User } = require('../models');
 const { verifyAdmin, authenticateToken } = require('../middleware/auth');
 const { sendBookingConfirmation, sendBookingCancellation } = require('../utils/emailService');
 
@@ -43,8 +43,34 @@ router.put('/:id/status', verifyAdmin, async (req, res) => {
             return res.status(404).json({ message: 'Booking not found' });
         }
 
+        const oldStatus = booking.status;
         booking.status = status;
         await booking.save();
+
+        // Loyalty Points Logic
+        if (status === 'Completed' && oldStatus !== 'Completed' && booking.userId) {
+            const user = await User.findByPk(booking.userId);
+            const service = await Service.findByPk(booking.serviceId);
+
+            if (user && service) {
+                const pointsEarned = Math.floor(parseFloat(service.price) * 10);
+                user.loyaltyPoints += pointsEarned;
+                await user.save();
+
+                // Referral Bonus Logic: If this is the user's FIRST completed booking
+                const completedCount = await Booking.count({
+                    where: { userId: user.id, status: 'Completed' }
+                });
+
+                if (completedCount === 1 && user.referredBy) {
+                    const referrer = await User.findByPk(user.referredBy);
+                    if (referrer) {
+                        referrer.loyaltyPoints += 100; // Bonus for referring a new customer
+                        await referrer.save();
+                    }
+                }
+            }
+        }
 
         res.json(booking);
     } catch (err) {
@@ -86,10 +112,28 @@ router.get('/', authenticateToken, async (req, res) => {
 router.post('/', async (req, res) => {
     console.log('Received booking request:', req.body);
     try {
-        const { serviceId, date, time, notes, customerName, userId } = req.body;
+        const { serviceId, date, time, notes, customerName, userId, usePoints } = req.body;
 
         if (!serviceId || !date || !time) {
             return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        // Fetch service details for price
+        const service = await Service.findByPk(serviceId);
+        if (!service) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+
+        // Logic for point deduction
+        if (usePoints && userId) {
+            const user = await User.findByPk(userId);
+            if (user && user.loyaltyPoints > 0) {
+                const servicePrice = parseFloat(service.price);
+                const pointsNeeded = Math.min(user.loyaltyPoints, servicePrice * 100);
+                user.loyaltyPoints -= pointsNeeded;
+                await user.save();
+                console.log(`Deducted ${pointsNeeded} points from user ${userId}`);
+            }
         }
 
         // 1. Validate Date (Must be future)
@@ -100,13 +144,11 @@ router.post('/', async (req, res) => {
         }
 
         // 2. Check for Double Booking
-        // In a real app, you'd check if the SPECIFIC STYLIST is busy.
-        // For this demo, we'll assume limited slots per service/time.
         const existingBooking = await Booking.findOne({
             where: {
                 date,
                 time,
-                serviceId // Simple rule: Can't have same service at same time (demo logic)
+                serviceId
             }
         });
 
@@ -124,8 +166,8 @@ router.post('/', async (req, res) => {
             status: 'Confirmed'
         });
 
-        // Fetch service name for response
-        const service = await Service.findByPk(serviceId);
+        // Fetch service name for response (Already fetched above)
+
 
         // --- EMAIL SIMULATION ---
         const serviceName = service ? service.name : 'Service';

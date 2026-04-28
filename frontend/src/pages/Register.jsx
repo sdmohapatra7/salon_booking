@@ -12,18 +12,20 @@ const Register = () => {
 
     const formik = useFormik({
         initialValues: {
-            fullName: '',
+            name: '',
             email: '',
             password: '',
             confirmPassword: '',
+            referralCode: '',
         },
         validationSchema: Yup.object({
-            fullName: Yup.string().required('Required'),
+            name: Yup.string().required('Required'),
             email: Yup.string().email('Invalid email address').required('Required'),
             password: Yup.string().min(6, 'Must be at least 6 characters').required('Required'),
             confirmPassword: Yup.string()
                 .oneOf([Yup.ref('password'), null], 'Passwords must match')
                 .required('Required'),
+            referralCode: Yup.string().optional(),
         }),
         onSubmit: (values) => {
             dispatch(registerUser(values)).then((result) => {
@@ -56,18 +58,18 @@ const Register = () => {
                 <form className="mt-8 space-y-6" onSubmit={formik.handleSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                 Full Name
                             </label>
                             <input
-                                id="fullName"
-                                name="fullName"
+                                id="name"
+                                name="name"
                                 type="text"
-                                {...formik.getFieldProps('fullName')}
+                                {...formik.getFieldProps('name')}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                             />
-                            {formik.touched.fullName && formik.errors.fullName ? (
-                                <div className="text-red-500 text-xs mt-1">{formik.errors.fullName}</div>
+                            {formik.touched.name && formik.errors.name ? (
+                                <div className="text-red-500 text-xs mt-1">{formik.errors.name}</div>
                             ) : null}
                         </div>
                         <div>
@@ -117,6 +119,19 @@ const Register = () => {
                             {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
                                 <div className="text-red-500 text-xs mt-1">{formik.errors.confirmPassword}</div>
                             ) : null}
+                        </div>
+                        <div>
+                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700">
+                                Referral Code (Optional)
+                            </label>
+                            <input
+                                id="referralCode"
+                                name="referralCode"
+                                type="text"
+                                placeholder="e.g. SALON-XXXXXX"
+                                {...formik.getFieldProps('referralCode')}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm uppercase"
+                            />
                         </div>
                     </div>
 

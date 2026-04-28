@@ -15,7 +15,7 @@ const signToken = (user) => {
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, referralCode } = req.body;
 
         // Check if user exists
         let user = await User.findOne({ where: { email } });
@@ -23,13 +23,21 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Create user (In real app, hash password here)
+        let referredById = null;
+        if (referralCode) {
+            const referrer = await User.findOne({ where: { referralCode } });
+            if (referrer) {
+                referredById = referrer.id;
+            }
+        }
+
+        // Create user
         user = await User.create({
             name,
             email,
             password,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
-            // role defaults to 'customer'
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+            referredBy: referredById
         });
 
         const token = signToken(user);
@@ -41,7 +49,9 @@ router.post('/register', async (req, res) => {
             email: user.email,
             avatar: user.avatar,
             role: user.role,
-            isTwoFactorEnabled: user.isTwoFactorEnabled
+            isTwoFactorEnabled: user.isTwoFactorEnabled,
+            loyaltyPoints: user.loyaltyPoints,
+            referralCode: user.referralCode
         });
     } catch (err) {
         console.error(err);
@@ -84,7 +94,9 @@ router.post('/login', async (req, res) => {
             email: user.email,
             avatar: user.avatar,
             role: user.role,
-            isTwoFactorEnabled: user.isTwoFactorEnabled
+            isTwoFactorEnabled: user.isTwoFactorEnabled,
+            loyaltyPoints: user.loyaltyPoints,
+            referralCode: user.referralCode
         });
     } catch (err) {
         console.error(err);
@@ -122,7 +134,9 @@ router.get('/me', authenticateToken, async (req, res) => {
             email: user.email,
             avatar: user.avatar,
             role: user.role,
-            isTwoFactorEnabled: user.isTwoFactorEnabled
+            isTwoFactorEnabled: user.isTwoFactorEnabled,
+            loyaltyPoints: user.loyaltyPoints,
+            referralCode: user.referralCode
         });
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });

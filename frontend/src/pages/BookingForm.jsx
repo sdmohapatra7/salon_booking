@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { fetchServices } from '../store/servicesSlice';
 import { createBooking, resetCreateStatus } from '../store/bookingsSlice';
+import { updateLoyaltyPoints } from '../store/authSlice';
 import PaymentForm from '../components/PaymentForm';
 
 const BookingForm = () => {
@@ -18,6 +19,7 @@ const BookingForm = () => {
     const [agreed, setAgreed] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [bookingData, setBookingData] = useState(null);
+    const [usePoints, setUsePoints] = useState(false);
 
     useEffect(() => {
         if (services.length === 0) {
@@ -73,7 +75,8 @@ const BookingForm = () => {
                 time: values.time,
                 notes: values.message,
                 userId: user?.id,
-                customerName: `${values.firstName} ${values.lastName}`
+                customerName: `${values.firstName} ${values.lastName}`,
+                usePoints: usePoints
             };
             setBookingData(data);
             setShowPayment(true);
@@ -82,10 +85,18 @@ const BookingForm = () => {
 
     const handlePaymentSuccess = () => {
         dispatch(createBooking(bookingData));
+        if (usePoints && user) {
+            const newPoints = user.loyaltyPoints - maxPointsRedeemable;
+            dispatch(updateLoyaltyPoints(newPoints));
+        }
     };
 
     const selectedService = services.find(s => s.id === parseInt(formik.values.serviceType));
-    const totalPrice = selectedService ? selectedService.price : 0;
+    const servicePrice = selectedService ? parseFloat(selectedService.price) : 0;
+    
+    const maxPointsRedeemable = Math.min(user?.loyaltyPoints || 0, servicePrice * 100);
+    const discount = usePoints ? maxPointsRedeemable / 100 : 0;
+    const totalPrice = servicePrice - discount;
 
     if (createStatus === 'succeeded') {
         return (
@@ -271,11 +282,29 @@ const BookingForm = () => {
                         </div>
 
                         <div className="flex flex-col md:flex-row justify-between items-center pt-4">
-                            <div className="flex items-center gap-1 mb-4 md:mb-0">
-                                <span className="text-sm font-medium text-gray-500">Total</span>
-                                <span className="text-2xl font-bold text-gray-900">
-                                    {totalPrice > 0 ? `$${totalPrice.toLocaleString()}` : '$0'}
-                                </span>
+                            <div className="flex flex-col items-start gap-1 mb-4 md:mb-0">
+                                <span className="text-sm font-medium text-gray-500">Total Price</span>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-2xl font-bold text-gray-900">
+                                        ${totalPrice.toLocaleString()}
+                                    </span>
+                                    {discount > 0 && (
+                                        <span className="text-sm text-green-600 font-medium">(-${discount} discount)</span>
+                                    )}
+                                </div>
+                                {user?.loyaltyPoints > 0 && !showPayment && (
+                                    <label className="flex items-center gap-2 mt-2 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={usePoints}
+                                            onChange={(e) => setUsePoints(e.target.checked)}
+                                            className="h-4 w-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
+                                        />
+                                        <span className="text-xs text-gray-600 group-hover:text-rose-600 transition-colors">
+                                            Use my Loyalty Points (Balance: {user.loyaltyPoints} pts)
+                                        </span>
+                                    </label>
+                                )}
                             </div>
 
                             <div className="flex flex-col items-end gap-4 w-full md:w-auto">

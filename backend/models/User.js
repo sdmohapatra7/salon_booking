@@ -43,7 +43,35 @@ const User = sequelize.define('User', {
     isTwoFactorEnabled: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    loyaltyPoints: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    referralCode: {
+        type: DataTypes.STRING,
+        unique: true
+    },
+    referredBy: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Users',
+            key: 'id'
+        }
+    }
+}, {
+    hooks: {
+        beforeCreate: async (user) => {
+            if (!user.referralCode) {
+                user.referralCode = 'SALON-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            }
+        }
     }
 });
+
+// Associations for self-referencing (Referrals)
+User.belongsTo(User, { as: 'Referrer', foreignKey: 'referredBy' });
+User.hasMany(User, { as: 'Referrals', foreignKey: 'referredBy' });
 
 module.exports = User;

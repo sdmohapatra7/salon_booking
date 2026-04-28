@@ -69,7 +69,7 @@ const UserDashboard = () => {
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -105,6 +105,44 @@ const UserDashboard = () => {
                                         <h3 className="text-2xl font-bold text-gray-900">{activeFavorites}</h3>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="bg-gradient-to-br from-rose-500 to-rose-600 p-6 rounded-xl shadow-md text-white md:col-span-3 lg:col-span-1">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-rose-100">Loyalty Points</p>
+                                        <h3 className="text-2xl font-bold">{user?.loyaltyPoints || 0}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Referral Section */}
+                        <div className="bg-white rounded-xl shadow-sm border border-rose-100 p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex-1">
+                                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800 mb-2">
+                                    Refer & Earn
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Invite your friends and earn bonus points!</h3>
+                                <p className="text-gray-500 text-sm">Give 100 points to your friend and get 100 points when they complete their first booking.</p>
+                            </div>
+                            <div className="w-full md:w-auto bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center gap-4">
+                                <div>
+                                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Your Code</p>
+                                    <p className="text-lg font-mono font-bold text-rose-600 tracking-widest">{user?.referralCode || 'NOT-GEN'}</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(user?.referralCode || '');
+                                        alert('Referral code copied!');
+                                    }}
+                                    className="bg-white border border-gray-200 p-2 rounded hover:bg-gray-100 transition-colors"
+                                    title="Copy Code"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-600"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>
+                                </button>
                             </div>
                         </div>
 

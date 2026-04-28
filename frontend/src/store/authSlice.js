@@ -71,6 +71,12 @@ const authSlice = createSlice({
         },
         clearError: (state) => {
             state.error = null;
+        },
+        updateLoyaltyPoints: (state, action) => {
+            if (state.user) {
+                state.user.loyaltyPoints = action.payload;
+                localStorage.setItem('salon_user', JSON.stringify(state.user));
+            }
         }
     },
     extraReducers: (builder) => {
@@ -150,5 +156,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, updateLoyaltyPoints } = authSlice.actions;
 export default authSlice.reducer;
