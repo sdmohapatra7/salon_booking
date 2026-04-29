@@ -3,6 +3,7 @@ import servicesReducer from './servicesSlice';
 import bookingsReducer from './bookingsSlice';
 import authReducer from './authSlice';
 import favoritesReducer from './favoritesSlice';
+import staffReducer from './staffSlice';
 
 export const store = configureStore({
     reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
         bookings: bookingsReducer,
         auth: authReducer,
         favorites: favoritesReducer,
+        staff: staffReducer,
     },
 });

@@ -19,6 +19,10 @@ const User = sequelize.define('User', {
             isEmail: true
         }
     },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     password: {
         type: DataTypes.STRING,
         allowNull: true // Allow null for Google Auth users
@@ -59,6 +63,22 @@ const User = sequelize.define('User', {
             model: 'Users',
             key: 'id'
         }
+    },
+    planId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    subscriptionStatus: {
+        type: DataTypes.ENUM('inactive', 'active', 'past_due', 'cancelled'),
+        defaultValue: 'inactive'
+    },
+    subscriptionEndDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    stripeCustomerId: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     hooks: {

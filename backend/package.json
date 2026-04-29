@@ -25,6 +25,8 @@
     "pg-hstore": "^2.3.4",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.7",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "stripe": "^22.1.0",
+    "twilio": "^6.0.0"
   }
 }

@@ -16,8 +16,20 @@ const Booking = sequelize.define('Booking', {
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM('Confirmed', 'Cancelled', 'Completed'),
+        type: DataTypes.ENUM('Pending', 'Confirmed', 'Cancelled', 'Completed'),
         defaultValue: 'Confirmed'
+    },
+    paymentStatus: {
+        type: DataTypes.ENUM('Pending', 'Paid', 'Failed', 'Refunded'),
+        defaultValue: 'Pending'
+    },
+    stripeSessionId: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    totalAmount: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
     },
     notes: {
         type: DataTypes.TEXT,
@@ -25,7 +37,15 @@ const Booking = sequelize.define('Booking', {
     },
     customerName: {
         type: DataTypes.STRING,
-        allowNull: true // For guest bookings, or populated from User
+        allowNull: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    staffId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 });
 

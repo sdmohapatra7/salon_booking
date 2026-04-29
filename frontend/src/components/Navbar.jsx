@@ -29,18 +29,20 @@ const Navbar = () => {
             </Link>
 
             {/* Middle Links */}
-            <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
+            <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
                 <Link to="/" className="hover:text-black transition-colors">Home</Link>
                 <Link to="/services" className="hover:text-black transition-colors">Services</Link>
+                <Link to="/portfolio" className="hover:text-black transition-colors">Portfolio</Link>
+                <Link to="/membership" className="hover:text-black transition-colors">Membership</Link>
+                <Link to="/gift-cards" className="hover:text-black transition-colors">Gift Cards</Link>
                 {isAuthenticated && (
                     <>
                         <Link to="/bookings" className="hover:text-black transition-colors">My Bookings</Link>
-                        <Link to="/favorites" className="hover:text-black transition-colors">Favorites</Link>
                     </>
                 )}
                 <Link to="/contact" className="hover:text-black transition-colors">Contact</Link>
                 {isAuthenticated && user?.role === 'admin' && (
-                    <Link to="/admin" className="text-teal-600 font-bold hover:text-teal-800 transition-colors">Admin Dashboard</Link>
+                    <Link to="/admin" className="text-rose-600 font-bold hover:text-rose-800 transition-colors">Admin</Link>
                 )}
             </div>
 

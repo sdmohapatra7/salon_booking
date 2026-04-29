@@ -14,6 +14,10 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
+
+// Stripe Webhook needs raw body before express.json()
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 const passport = require('./config/passport');
 app.use(passport.initialize());
@@ -28,6 +32,13 @@ app.use((req, res, next) => {
 app.use('/api/services', servicesRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/staff', require('./routes/staff'));
+app.use('/api/plans', require('./routes/plans'));
+app.use('/api/portfolio', require('./routes/portfolio'));
+app.use('/api/working-hours', require('./routes/workingHours'));
+app.use('/api/gift-cards', require('./routes/giftCards'));
+app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/2fa', require('./routes/twoFactor'));

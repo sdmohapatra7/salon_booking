@@ -3,6 +3,7 @@ const router = express.Router();
 const { Booking, Service, User } = require('../models');
 const { verifyAdmin, authenticateToken } = require('../middleware/auth');
 const { sendBookingConfirmation, sendBookingCancellation } = require('../utils/emailService');
+const { sendBookingNotification } = require('../utils/whatsappService');
 
 // GET /api/bookings/all - Fetch ALL bookings (Admin only)
 router.get('/all', verifyAdmin, async (req, res) => {
@@ -22,6 +23,7 @@ router.get('/all', verifyAdmin, async (req, res) => {
             time: b.time,
             status: b.status,
             customerName: b.customerName,
+            phone: b.phone,
             notes: b.notes,
             userId: b.userId
         }));
@@ -112,7 +114,7 @@ router.get('/', authenticateToken, async (req, res) => {
 router.post('/', async (req, res) => {
     console.log('Received booking request:', req.body);
     try {
-        const { serviceId, date, time, notes, customerName, userId, usePoints } = req.body;
+        const { serviceId, date, time, notes, customerName, phone, userId, staffId, usePoints } = req.body;
 
         if (!serviceId || !date || !time) {
             return res.status(400).json({ message: 'Missing required fields' });
@@ -162,9 +164,15 @@ router.post('/', async (req, res) => {
             time,
             notes,
             customerName,
+            phone,
             userId,
-            status: 'Confirmed'
+            staffId: staffId ? parseInt(staffId) : null,
+            status: 'Pending'
         });
+
+        // --- WHATSAPP NOTIFICATION ---
+        sendBookingNotification(booking, service.name);
+        // ------------------------------
 
         // Fetch service name for response (Already fetched above)
 

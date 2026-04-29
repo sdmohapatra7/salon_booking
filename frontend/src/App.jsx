@@ -17,11 +17,19 @@ import Settings from './pages/Settings';
 import Contact from './pages/Contact';
 import UserDashboard from './pages/UserDashboard';
 import GenericPage from './pages/GenericPage';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancelled from './pages/PaymentCancelled';
+import Membership from './pages/Membership';
+import Portfolio from './pages/Portfolio';
+import GiftCards from './pages/GiftCards';
+import Analytics from './pages/Admin/Analytics';
 
 import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import ManageServices from './pages/admin/ManageServices';
+import ManageHours from './pages/Admin/ManageHours';
+import ManageStaff from './pages/Admin/ManageStaff';
+import ManageServices from './pages/Admin/ManageServices';
 import ManageBookings from './pages/admin/ManageBookings';
 
 
@@ -58,6 +66,11 @@ const Layout = () => {
           <Route path="/faq" element={<GenericPage type="faq" />} />
           <Route path="/privacy" element={<GenericPage type="privacy" />} />
           <Route path="/terms" element={<GenericPage type="terms" />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-cancelled" element={<PaymentCancelled />} />
+          <Route path="/membership" element={<Membership />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/gift-cards" element={<GiftCards />} />
 
           {/* Protected Routes */}
           <Route
@@ -99,6 +112,9 @@ const Layout = () => {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/services" element={<ManageServices />} />
             <Route path="/admin/bookings" element={<ManageBookings />} />
+            <Route path="/admin/staff" element={<ManageStaff />} />
+            <Route path="/admin/hours" element={<ManageHours />} />
+            <Route path="/admin/analytics" element={<Analytics />} />
           </Route>
         </Routes>
       </main>
