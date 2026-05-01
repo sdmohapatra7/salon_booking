@@ -23,6 +23,8 @@ import Membership from './pages/Membership';
 import Portfolio from './pages/Portfolio';
 import GiftCards from './pages/GiftCards';
 import Analytics from './pages/Admin/Analytics';
+import NotFound from './pages/NotFound';
+import ServerError from './pages/ServerError';
 
 import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -36,7 +38,7 @@ const Layout = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const hideLayout = ['/login', '/register'].includes(location.pathname);
+  const hideLayout = ['/login', '/register', '/404', '/500'].includes(location.pathname);
 
   useEffect(() => {
     if (user) {
@@ -76,7 +78,7 @@ const Layout = () => {
           <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-          {/* Admin Routes (Nested under AdminRoute check) */}
+          {/* Admin Routes */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/services" element={<ManageServices />} />
@@ -86,8 +88,10 @@ const Layout = () => {
             <Route path="/admin/analytics" element={<Analytics />} />
           </Route>
 
-          {/* 404 Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Error Pages */}
+          <Route path="/500" element={<ServerError />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {!hideLayout && <Footer />}
