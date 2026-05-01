@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './store/store';
 import { fetchFavorites } from './store/favoritesSlice';
@@ -32,9 +32,6 @@ import ManageStaff from './pages/Admin/ManageStaff';
 import ManageServices from './pages/Admin/ManageServices';
 import ManageBookings from './pages/admin/ManageBookings';
 
-
-
-
 const Layout = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -52,6 +49,7 @@ const Layout = () => {
       {!hideLayout && <Navbar />}
       <main className="flex-grow">
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<ServiceListing />} />
           <Route path="/book/:serviceId" element={<BookingForm />} />
@@ -72,42 +70,13 @@ const Layout = () => {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/gift-cards" element={<GiftCards />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <UserDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/bookings"
-            element={
-              <ProtectedRoute>
-                <MyBookings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/favorites"
-            element={
-              <ProtectedRoute>
-                <Favorites />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-        {/* Admin Routes */}
-        <Routes>
+          {/* Protected User Routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
+          <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+
+          {/* Admin Routes (Nested under AdminRoute check) */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/services" element={<ManageServices />} />
@@ -116,6 +85,9 @@ const Layout = () => {
             <Route path="/admin/hours" element={<ManageHours />} />
             <Route path="/admin/analytics" element={<Analytics />} />
           </Route>
+
+          {/* 404 Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       {!hideLayout && <Footer />}

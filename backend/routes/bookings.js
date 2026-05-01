@@ -110,8 +110,18 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// POST /api/bookings - Create new booking
-router.post('/', async (req, res) => {
+const optionalAuthenticate = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return next();
+
+    require('jsonwebtoken').verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (!err) req.user = user;
+        next();
+    });
+};
+
+router.post('/', optionalAuthenticate, async (req, res) => {
     console.log('Received booking request:', req.body);
     try {
         const { serviceId, date, time, notes, customerName, phone, userId, staffId, usePoints } = req.body;
@@ -126,15 +136,18 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ message: 'Service not found' });
         }
 
+        // Determine User ID (Use token if logged in, otherwise body for guest)
+        const finalUserId = req.user ? req.user.id : userId;
+
         // Logic for point deduction
-        if (usePoints && userId) {
-            const user = await User.findByPk(userId);
+        if (usePoints && finalUserId) {
+            const user = await User.findByPk(finalUserId);
             if (user && user.loyaltyPoints > 0) {
                 const servicePrice = parseFloat(service.price);
                 const pointsNeeded = Math.min(user.loyaltyPoints, servicePrice * 100);
                 user.loyaltyPoints -= pointsNeeded;
                 await user.save();
-                console.log(`Deducted ${pointsNeeded} points from user ${userId}`);
+                console.log(`Deducted ${pointsNeeded} points from user ${finalUserId}`);
             }
         }
 
@@ -165,7 +178,7 @@ router.post('/', async (req, res) => {
             notes,
             customerName,
             phone,
-            userId,
+            userId: finalUserId,
             staffId: staffId ? parseInt(staffId) : null,
             status: 'Pending'
         });
@@ -204,7 +217,7 @@ router.post('/', async (req, res) => {
 });
 
 // POST /api/bookings/:id/cancel
-router.post('/:id/cancel', async (req, res) => {
+router.post('/:id/cancel', authenticateToken, async (req, res) => {
     try {
         const booking = await Booking.findByPk(req.params.id, {
             include: [{ model: Service, attributes: ['name'] }]
@@ -213,6 +226,12 @@ router.post('/:id/cancel', async (req, res) => {
         if (!booking) {
             return res.status(404).json({ success: false, message: "Booking not found" });
         }
+
+        // --- SECURITY CHECK: Only Owner or Admin can cancel ---
+        if (booking.userId !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: "Access denied. You can only cancel your own bookings." });
+        }
+        // ------------------------------------------------------
 
         booking.status = 'Cancelled';
         await booking.save();

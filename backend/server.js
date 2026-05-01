@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 const { sequelize } = require('./models');
+const errorHandler = require('./middleware/errorHandler');
 
 // Routes
 const servicesRoutes = require('./routes/services');
@@ -12,7 +15,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Security & Optimization Middleware
+app.use(helmet());
+app.use(compression());
 app.use(cors());
 
 // Stripe Webhook needs raw body before express.json()
@@ -43,18 +48,13 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/2fa', require('./routes/twoFactor'));
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-    console.error('Unhandled Error:', err);
-    res.status(500).json({ message: 'Internal Server Error', error: err.message });
-});
+// Global Error Handler (Centralized)
+app.use(errorHandler);
 
 // Database Connection & Server Start
 sequelize.authenticate()
     .then(() => {
         console.log('Database connected...');
-        // Sync models (force: false means don't drop tables if they exist)
-        // In dev, you might use { force: true } to reset DB, strictly for this demo I'll use default.
         return sequelize.sync({ alter: true });
     })
     .then(() => {

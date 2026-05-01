@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const bcrypt = require('bcryptjs');
 
 const User = sequelize.define('User', {
     id: {
@@ -86,9 +87,24 @@ const User = sequelize.define('User', {
             if (!user.referralCode) {
                 user.referralCode = 'SALON-' + Math.random().toString(36).substring(2, 8).toUpperCase();
             }
+            if (user.password) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        },
+        beforeUpdate: async (user) => {
+            if (user.changed('password')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
         }
     }
 });
+
+// Instance method to compare password
+User.prototype.comparePassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
 
 // Associations for self-referencing (Referrals)
 User.belongsTo(User, { as: 'Referrer', foreignKey: 'referredBy' });
